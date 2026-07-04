@@ -8,6 +8,9 @@ interface Props {
   renderer: VisualizerRenderer;
 }
 
+// Drives the requestAnimationFrame loop: pulls fresh analyser data every frame,
+// derives frequency bands, and hands it all to whichever renderer is active.
+// analyserRef is a ref (not state) so switching audio sources never restarts this loop.
 export function VisualizerCanvas({ analyserRef, renderer }: Props) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
 
@@ -21,6 +24,8 @@ export function VisualizerCanvas({ analyserRef, renderer }: Props) {
     let lastTime = performance.now();
     let rafId = 0;
 
+    // Backs the canvas with device pixels (not CSS pixels) for crisp rendering on
+    // high-DPI screens, then scales the 2D context so draw calls can keep using CSS units.
     const resize = () => {
       const dpr = window.devicePixelRatio || 1;
       canvas.width = Math.max(1, Math.floor(canvas.clientWidth * dpr));
@@ -33,6 +38,7 @@ export function VisualizerCanvas({ analyserRef, renderer }: Props) {
 
     const loop = (now: number) => {
       rafId = requestAnimationFrame(loop);
+      // Clamp dt so a tab coming back from the background doesn't cause a huge jump.
       const dt = Math.min(0.1, (now - lastTime) / 1000);
       lastTime = now;
 
@@ -40,6 +46,7 @@ export function VisualizerCanvas({ analyserRef, renderer }: Props) {
       const h = canvas.clientHeight;
       const analyser = analyserRef.current;
 
+      // No audio source yet: still draw an empty frame so the renderer's background/idle state shows.
       if (!analyser) {
         renderer.draw(ctx2d, w, h, {
           freq: new Uint8Array(0),
@@ -52,6 +59,7 @@ export function VisualizerCanvas({ analyserRef, renderer }: Props) {
         return;
       }
 
+      // Buffers are resized lazily to match the analyser, which changes when fftSize changes.
       if (freqData.length !== analyser.frequencyBinCount) {
         freqData = new Uint8Array(analyser.frequencyBinCount);
       }

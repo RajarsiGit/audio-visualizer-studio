@@ -13,9 +13,15 @@ interface Particle {
 
 const MAX_PARTICLES = 600;
 
+// Particle system driven by bass transients: a burst of particles fires when
+// bass energy jumps sharply, mids trigger occasional single sparks, and treble
+// modulates particle size. Particle state (position/velocity/age) persists
+// across frames in the closure since this is a factory, not a React component.
 export function createParticlesRenderer(theme: Theme): VisualizerRenderer {
   let particles: Particle[] = [];
   let prevBass = 0;
+  // Decaying envelope used only for the center glow, so it fades smoothly
+  // between transients instead of snapping to the raw (noisy) bass value.
   let bassEnvelope = 0;
 
   function spawnBurst(cx: number, cy: number, count: number, power: number) {
@@ -42,6 +48,7 @@ export function createParticlesRenderer(theme: Theme): VisualizerRenderer {
       ctx.fillStyle = theme.background;
       ctx.fillRect(0, 0, w, h);
 
+      // Envelope decays at a fixed rate per second, but jumps instantly to a louder bass hit.
       bassEnvelope = Math.max(bass, bassEnvelope - dt * 2.5);
       const delta = bass - prevBass;
       prevBass = bass;
@@ -49,6 +56,8 @@ export function createParticlesRenderer(theme: Theme): VisualizerRenderer {
       const cx = w / 2;
       const cy = h / 2;
 
+      // Only fire a burst on a sharp rise (a "hit"), not sustained loud bass, to avoid
+      // spawning particles every frame while a bass note holds.
       if (bass > 0.55 && delta > 0.08) {
         spawnBurst(cx, cy, 18 + Math.floor(bass * 40), bass);
       }
@@ -63,6 +72,7 @@ export function createParticlesRenderer(theme: Theme): VisualizerRenderer {
         p.vx *= 0.98;
         p.vy *= 0.98;
       }
+      // Prune expired particles rather than tracking removal indices during the update loop above.
       particles = particles.filter((p) => p.life < p.maxLife);
 
       ctx.shadowColor = theme.glow;
@@ -81,6 +91,7 @@ export function createParticlesRenderer(theme: Theme): VisualizerRenderer {
       ctx.globalAlpha = 1;
       ctx.shadowBlur = 0;
 
+      // Pulsing radial glow at the emission point, sized/faded by the smoothed bass envelope.
       const coreR = 20 + bassEnvelope * 60;
       const coreGrad = ctx.createRadialGradient(cx, cy, 0, cx, cy, coreR);
       coreGrad.addColorStop(0, theme.glow);

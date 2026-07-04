@@ -1,5 +1,7 @@
 import type { Theme } from './types';
 
+// Plain data consumed by every visualizer factory; switching themes just
+// recreates the renderers (see the useMemo keyed on theme in App.tsx).
 export const THEMES: Theme[] = [
   {
     name: 'Neon Purple',

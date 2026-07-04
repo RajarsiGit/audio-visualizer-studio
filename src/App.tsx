@@ -10,6 +10,9 @@ import {
   createWaveformRenderer,
 } from './visualizers';
 
+// Composition root: owns UI state (fft size, smoothing, active visualizer/theme,
+// fullscreen/drag state), wires useAudioEngine into VisualizerCanvas, and passes
+// everything else down to ControlBar.
 function App() {
   const [fftSize, setFftSize] = useState(2048);
   const [smoothing, setSmoothing] = useState(0.8);
@@ -22,6 +25,7 @@ function App() {
   const engine = useAudioEngine({ fftSize, smoothing });
   const theme = THEMES[themeIndex];
 
+  // Recreated whenever the theme changes so each renderer's draw closure picks up new colors.
   const visualizers = useMemo(
     () => [createBarsRenderer(theme), createWaveformRenderer(theme), createParticlesRenderer(theme)],
     [theme],
@@ -32,6 +36,7 @@ function App() {
     e.preventDefault();
     setIsDragging(false);
     const file = e.dataTransfer.files?.[0];
+    // Ignore non-audio drops (e.g. images) rather than attempting to load them.
     if (file && file.type.startsWith('audio/')) {
       void engine.loadFile(file);
     }

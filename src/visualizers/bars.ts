@@ -1,5 +1,7 @@
 import type { Theme, VisualizerRenderer } from './types';
 
+// Classic frequency-bar spectrum: subsamples the FFT bins down to a fixed
+// number of bars and grows the glow with bass energy.
 export function createBarsRenderer(theme: Theme): VisualizerRenderer {
   return {
     id: 'bars',
@@ -18,6 +20,7 @@ export function createBarsRenderer(theme: Theme): VisualizerRenderer {
       const stops = theme.colors;
       stops.forEach((color, i) => grad.addColorStop(i / (stops.length - 1), color));
 
+      // shadowBlur is used purely as a cheap glow effect, not a real shadow.
       ctx.shadowColor = theme.glow;
       ctx.shadowBlur = 12 + bass * 30;
       ctx.fillStyle = grad;

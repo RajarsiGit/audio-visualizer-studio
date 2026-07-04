@@ -1,5 +1,10 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 
+// Owns the AudioContext and a single shared AnalyserNode, and switches between
+// two mutually-exclusive sources (microphone / file playback) by rewiring the
+// graph rather than recreating the analyser, so fftSize/smoothing changes and
+// the render loop's ref stay stable across source switches.
+
 export type SourceKind = 'idle' | 'mic' | 'file';
 
 interface AudioEngineOptions {
@@ -47,12 +52,15 @@ export function useAudioEngine({ fftSize, smoothing }: AudioEngineOptions) {
       el.removeEventListener('play', onPlay);
       el.removeEventListener('pause', onPause);
       el.pause();
+      // Release the blob URL and mic tracks so the browser can reclaim the resources.
       if (objectUrlRef.current) URL.revokeObjectURL(objectUrlRef.current);
       micStreamRef.current?.getTracks().forEach((t) => t.stop());
       void audioCtxRef.current?.close();
     };
   }, []);
 
+  // Lazily creates the AudioContext/AnalyserNode on first use (browsers require
+  // a user gesture before audio can start) and reuses them across source switches.
   const ensureContext = useCallback(() => {
     if (!audioCtxRef.current) {
       audioCtxRef.current = new AudioContext();
@@ -122,11 +130,14 @@ export function useAudioEngine({ fftSize, smoothing }: AudioEngineOptions) {
         objectUrlRef.current = url;
         el.src = url;
 
+        // createMediaElementSource can only be called once per <audio> element,
+        // so the source node is created once and reused across file loads.
         if (!mediaElSourceRef.current) {
           const source = ctx.createMediaElementSource(el);
           mediaElSourceRef.current = source;
           source.connect(analyser);
         }
+        // Unlike mic input, file playback routes to destination so it's audible.
         analyser.disconnect();
         analyser.connect(ctx.destination);
 

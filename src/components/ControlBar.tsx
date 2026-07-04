@@ -26,6 +26,7 @@ interface Props {
   onSmoothingChange: (value: number) => void;
 }
 
+// mm:ss display for the file-playback scrubber; guards against NaN before duration loads.
 function formatTime(seconds: number): string {
   if (!Number.isFinite(seconds)) return '0:00';
   const m = Math.floor(seconds / 60);
@@ -60,6 +61,7 @@ export function ControlBar({
   const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) onFile(file);
+    // Reset so selecting the same file again still fires a change event.
     e.target.value = '';
   };
 

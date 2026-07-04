@@ -1,5 +1,7 @@
 import type { Theme, VisualizerRenderer } from './types';
 
+// Oscilloscope-style line tracing the raw time-domain waveform, with the
+// stroke width/glow reacting to treble energy.
 export function createWaveformRenderer(theme: Theme): VisualizerRenderer {
   return {
     id: 'waveform',
@@ -22,6 +24,7 @@ export function createWaveformRenderer(theme: Theme): VisualizerRenderer {
       const sliceWidth = w / time.length;
       let x = 0;
       for (let i = 0; i < time.length; i++) {
+        // Time-domain samples are unsigned bytes centered at 128 (silence); rescale to -1..1.
         const v = time[i] / 128 - 1;
         const y = h / 2 + v * (h / 2) * 0.85;
         if (i === 0) ctx.moveTo(x, y);
