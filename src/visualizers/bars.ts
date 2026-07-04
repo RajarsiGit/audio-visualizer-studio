@@ -15,9 +15,8 @@ export function createBarsRenderer(theme: Theme): VisualizerRenderer {
       const barWidth = w / barCount - gap;
 
       const grad = ctx.createLinearGradient(0, h, 0, 0);
-      grad.addColorStop(0, theme.colors[0]);
-      grad.addColorStop(0.6, theme.colors[1]);
-      grad.addColorStop(1, theme.colors[2]);
+      const stops = theme.colors;
+      stops.forEach((color, i) => grad.addColorStop(i / (stops.length - 1), color));
 
       ctx.shadowColor = theme.glow;
       ctx.shadowBlur = 12 + bass * 30;

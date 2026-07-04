@@ -47,14 +47,14 @@ function App() {
 
   return (
     <div ref={stageRef} className="relative flex h-screen w-screen flex-col overflow-hidden bg-black text-white">
-      <header className="pointer-events-none absolute top-0 left-0 z-10 flex w-full items-start justify-between p-4">
+      <header className="pointer-events-none absolute top-0 left-0 z-10 flex w-full items-start justify-between bg-gradient-to-b from-black/60 to-transparent p-4">
         <div>
-          <h1 className="text-sm font-semibold tracking-wide text-white/80">Audio Visualizer Studio</h1>
-          <p className="text-xs text-white/40">Bass, mids &amp; treble driving real-time canvas art</p>
+          <h1 className="text-sm font-semibold tracking-wide text-white/90">Audio Visualizer Studio</h1>
+          <p className="text-xs text-white/50">Bass, mids &amp; treble driving real-time canvas art</p>
         </div>
         <button
           onClick={toggleFullscreen}
-          className="pointer-events-auto rounded-full bg-white/10 px-3 py-1.5 text-xs text-white hover:bg-white/20"
+          className="pointer-events-auto rounded-full bg-white/10 px-3 py-1.5 text-xs text-white backdrop-blur-md hover:bg-white/20"
         >
           ⛶ Fullscreen
         </button>

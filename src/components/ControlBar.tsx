@@ -112,46 +112,53 @@ export function ControlBar({
 
         <div className="mx-1 h-6 w-px bg-white/10" />
 
-        <div className="flex items-center gap-1.5">
+        <div className="flex items-center gap-2">
           {themes.map((t, i) => (
             <button
               key={t.name}
               title={t.name}
+              aria-label={t.name}
               onClick={() => onThemeChange(i)}
-              className={`h-7 w-7 rounded-full border-2 transition ${
-                themeIndex === i ? 'border-white' : 'border-transparent'
+              className={`h-7 w-7 rounded-full ring-offset-2 ring-offset-black transition ${
+                themeIndex === i ? 'scale-110 ring-2 ring-white' : 'ring-0 hover:scale-105'
               }`}
-              style={{ background: `linear-gradient(135deg, ${t.colors[0]}, ${t.colors[2]})` }}
+              style={{ background: `linear-gradient(135deg, ${t.colors.join(', ')})` }}
             />
           ))}
         </div>
       </div>
 
       {status === 'file' && (
-        <div className="flex items-center gap-3 text-xs text-white/70">
-          <button onClick={onTogglePlay} className="text-lg leading-none">
-            {isPlaying ? '⏸' : '▶️'}
-          </button>
-          <span className="w-10 shrink-0 truncate" title={fileName ?? undefined}>
-            {formatTime(currentTime)}
-          </span>
-          <input
-            type="range"
-            min={0}
-            max={duration || 0}
-            step={0.01}
-            value={currentTime}
-            onChange={(e) => onSeek(Number(e.target.value))}
-            className="h-1 flex-1 accent-white"
-          />
-          <span className="w-10 shrink-0">{formatTime(duration)}</span>
-          <span className="max-w-40 truncate text-white/50">{fileName}</span>
+        <div className="flex flex-col gap-1.5">
+          <p className="truncate text-xs font-medium text-white/70" title={fileName ?? undefined}>
+            {fileName}
+          </p>
+          <div className="flex items-center gap-3 text-xs text-white/70">
+            <button
+              onClick={onTogglePlay}
+              className="grid h-7 w-7 shrink-0 place-items-center rounded-full bg-white/10 text-sm leading-none hover:bg-white/20"
+              aria-label={isPlaying ? 'Pause' : 'Play'}
+            >
+              {isPlaying ? '⏸' : '▶️'}
+            </button>
+            <span className="w-10 shrink-0 tabular-nums">{formatTime(currentTime)}</span>
+            <input
+              type="range"
+              min={0}
+              max={duration || 0}
+              step={0.01}
+              value={currentTime}
+              onChange={(e) => onSeek(Number(e.target.value))}
+              className="h-1 flex-1 accent-white"
+            />
+            <span className="w-10 shrink-0 text-right tabular-nums">{formatTime(duration)}</span>
+          </div>
         </div>
       )}
 
-      <div className="flex flex-wrap items-center gap-4 text-[11px] text-white/50">
+      <div className="flex flex-wrap items-center gap-4 border-t border-white/10 pt-3 text-xs text-white/60">
         <label className="flex items-center gap-2">
-          FFT Size
+          <span className="whitespace-nowrap">FFT Size</span>
           <select
             value={fftSize}
             onChange={(e) => onFftSizeChange(Number(e.target.value))}
@@ -165,8 +172,8 @@ export function ControlBar({
           </select>
         </label>
 
-        <label className="flex flex-1 items-center gap-2 min-w-40">
-          Smoothing
+        <label className="flex min-w-40 flex-1 items-center gap-2">
+          <span className="whitespace-nowrap">Smoothing</span>
           <input
             type="range"
             min={0}
@@ -176,7 +183,7 @@ export function ControlBar({
             onChange={(e) => onSmoothingChange(Number(e.target.value))}
             className="h-1 flex-1 accent-white"
           />
-          <span className="w-8 text-right">{smoothing.toFixed(2)}</span>
+          <span className="w-9 text-right tabular-nums">{smoothing.toFixed(2)}</span>
         </label>
       </div>
     </div>

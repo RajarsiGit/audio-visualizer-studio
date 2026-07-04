@@ -25,4 +25,10 @@ export const THEMES: Theme[] = [
     background: 'rgba(4, 4, 6, 0.35)',
     glow: '#ffffff',
   },
+  {
+    name: 'Spectrum',
+    colors: ['#ec4899', '#a855f7', '#3b82f6', '#22d3ee', '#4ade80', '#ffe61f', '#ff9d1f', '#ff3b3b'],
+    background: 'rgba(6, 4, 12, 0.35)',
+    glow: '#ffffff',
+  },
 ];

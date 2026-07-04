@@ -9,8 +9,12 @@ export function createWaveformRenderer(theme: Theme): VisualizerRenderer {
       ctx.fillRect(0, 0, w, h);
       if (time.length === 0) return;
 
+      const grad = ctx.createLinearGradient(0, 0, w, 0);
+      const stops = theme.colors;
+      stops.forEach((color, i) => grad.addColorStop(i / (stops.length - 1), color));
+
       ctx.lineWidth = 2 + treble * 3;
-      ctx.strokeStyle = theme.colors[1];
+      ctx.strokeStyle = grad;
       ctx.shadowColor = theme.glow;
       ctx.shadowBlur = 10 + treble * 20;
       ctx.beginPath();

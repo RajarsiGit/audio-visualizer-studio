@@ -15,7 +15,7 @@ export interface VisualizerRenderer {
 
 export interface Theme {
   name: string;
-  colors: [string, string, string];
+  colors: string[];
   background: string;
   glow: string;
 }
