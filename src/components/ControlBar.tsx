@@ -66,11 +66,11 @@ export function ControlBar({
   };
 
   return (
-    <div className="pointer-events-auto flex w-full max-w-5xl flex-col gap-3 rounded-2xl border border-white/10 bg-black/40 p-3 shadow-2xl backdrop-blur-xl sm:p-4">
-      <div className="flex flex-wrap items-center gap-2">
+    <div className="pointer-events-auto flex w-full max-w-5xl flex-col gap-3 overflow-y-auto rounded-2xl border border-white/10 bg-black/40 p-3 shadow-2xl backdrop-blur-xl sm:p-4">
+      <div className="flex items-center gap-2 sm:flex-wrap">
         <button
           onClick={onMic}
-          className={`rounded-full px-4 py-2 text-sm font-medium transition ${
+          className={`flex-1 rounded-full px-4 py-2 text-center text-sm font-medium whitespace-nowrap transition sm:flex-none ${
             status === 'mic'
               ? 'bg-white text-black'
               : 'bg-white/10 text-white hover:bg-white/20'
@@ -81,7 +81,7 @@ export function ControlBar({
 
         <button
           onClick={() => fileInputRef.current?.click()}
-          className={`rounded-full px-4 py-2 text-sm font-medium transition ${
+          className={`flex-1 rounded-full px-4 py-2 text-center text-sm font-medium whitespace-nowrap transition sm:flex-none ${
             status === 'file' ? 'bg-white text-black' : 'bg-white/10 text-white hover:bg-white/20'
           }`}
         >
@@ -92,42 +92,40 @@ export function ControlBar({
         {status !== 'idle' && (
           <button
             onClick={onStop}
-            className="rounded-full bg-white/10 px-4 py-2 text-sm font-medium text-white hover:bg-red-500/30"
+            className="flex-1 rounded-full bg-white/10 px-4 py-2 text-center text-sm font-medium whitespace-nowrap text-white hover:bg-red-500/30 sm:flex-none"
           >
             ⏹ Stop
           </button>
         )}
+      </div>
 
-        <div className="mx-1 h-6 w-px bg-white/10" />
-
+      <div className="flex items-center gap-2 sm:flex-wrap">
         {visualizers.map((v) => (
           <button
             key={v.id}
             onClick={() => onVisualizerChange(v.id)}
-            className={`rounded-full px-4 py-2 text-sm font-medium transition ${
+            className={`flex-1 rounded-full px-4 py-2 text-center text-sm font-medium whitespace-nowrap transition sm:flex-none ${
               visualizerId === v.id ? 'bg-white text-black' : 'bg-white/10 text-white hover:bg-white/20'
             }`}
           >
             {v.label}
           </button>
         ))}
+      </div>
 
-        <div className="mx-1 h-6 w-px bg-white/10" />
-
-        <div className="flex items-center gap-2">
-          {themes.map((t, i) => (
-            <button
-              key={t.name}
-              title={t.name}
-              aria-label={t.name}
-              onClick={() => onThemeChange(i)}
-              className={`h-7 w-7 rounded-full ring-offset-2 ring-offset-black transition ${
-                themeIndex === i ? 'scale-110 ring-2 ring-white' : 'ring-0 hover:scale-105'
-              }`}
-              style={{ background: `linear-gradient(135deg, ${t.colors.join(', ')})` }}
-            />
-          ))}
-        </div>
+      <div className="flex flex-wrap items-center gap-3">
+        {themes.map((t, i) => (
+          <button
+            key={t.name}
+            title={t.name}
+            aria-label={t.name}
+            onClick={() => onThemeChange(i)}
+            className={`h-10 w-10 rounded-full ring-offset-2 ring-offset-black transition ${
+              themeIndex === i ? 'scale-110 ring-2 ring-white' : 'ring-0 hover:scale-105'
+            }`}
+            style={{ background: `linear-gradient(135deg, ${t.colors.join(', ')})` }}
+          />
+        ))}
       </div>
 
       {status === 'file' && (
@@ -158,9 +156,9 @@ export function ControlBar({
         </div>
       )}
 
-      <div className="flex flex-wrap items-center gap-4 border-t border-white/10 pt-3 text-xs text-white/60">
-        <label className="flex items-center gap-2">
-          <span className="whitespace-nowrap">FFT Size</span>
+      <div className="flex flex-col gap-3 border-t border-white/10 pt-3 text-xs text-white/60">
+        <label className="flex items-center gap-3">
+          <span className="w-20 shrink-0 whitespace-nowrap">FFT Size</span>
           <select
             value={fftSize}
             onChange={(e) => onFftSizeChange(Number(e.target.value))}
@@ -174,8 +172,8 @@ export function ControlBar({
           </select>
         </label>
 
-        <label className="flex min-w-40 flex-1 items-center gap-2">
-          <span className="whitespace-nowrap">Smoothing</span>
+        <label className="flex items-center gap-3">
+          <span className="w-20 shrink-0 whitespace-nowrap">Smoothing</span>
           <input
             type="range"
             min={0}
@@ -185,7 +183,7 @@ export function ControlBar({
             onChange={(e) => onSmoothingChange(Number(e.target.value))}
             className="h-1 flex-1 accent-white"
           />
-          <span className="w-9 text-right tabular-nums">{smoothing.toFixed(2)}</span>
+          <span className="w-9 shrink-0 text-right tabular-nums">{smoothing.toFixed(2)}</span>
         </label>
       </div>
     </div>

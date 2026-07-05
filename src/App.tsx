@@ -19,6 +19,9 @@ function App() {
   const [visualizerId, setVisualizerId] = useState('bars');
   const [themeIndex, setThemeIndex] = useState(0);
   const [isDragging, setIsDragging] = useState(false);
+  // iOS Safari has no Fullscreen API for arbitrary elements, so hide the control there
+  // rather than show a button that silently does nothing.
+  const [fullscreenSupported] = useState(() => Boolean(document.fullscreenEnabled));
 
   const stageRef = useRef<HTMLDivElement | null>(null);
 
@@ -51,18 +54,25 @@ function App() {
   };
 
   return (
-    <div ref={stageRef} className="relative flex h-screen w-screen flex-col overflow-hidden bg-black text-white">
-      <header className="pointer-events-none absolute top-0 left-0 z-10 flex w-full items-start justify-between bg-gradient-to-b from-black/60 to-transparent p-4">
-        <div>
-          <h1 className="text-sm font-semibold tracking-wide text-white/90">Audio Visualizer Studio</h1>
-          <p className="text-xs text-white/50">Bass, mids &amp; treble driving real-time canvas art</p>
+    <div
+      ref={stageRef}
+      className="relative flex h-dvh w-screen flex-col overflow-hidden bg-black text-white"
+    >
+      <header
+        className="pointer-events-none absolute top-0 left-0 z-10 flex w-full items-start justify-between gap-2 bg-gradient-to-b from-black/60 to-transparent p-3 pt-[max(0.75rem,env(safe-area-inset-top))] sm:p-4"
+      >
+        <div className="min-w-0">
+          <h1 className="truncate text-sm font-semibold tracking-wide text-white/90">Audio Visualizer Studio</h1>
+          <p className="hidden text-xs text-white/50 sm:block">Bass, mids &amp; treble driving real-time canvas art</p>
         </div>
-        <button
-          onClick={toggleFullscreen}
-          className="pointer-events-auto rounded-full bg-white/10 px-3 py-1.5 text-xs text-white backdrop-blur-md hover:bg-white/20"
-        >
-          ⛶ Fullscreen
-        </button>
+        {fullscreenSupported && (
+          <button
+            onClick={toggleFullscreen}
+            className="pointer-events-auto shrink-0 rounded-full bg-white/10 px-3 py-1.5 text-xs text-white backdrop-blur-md hover:bg-white/20"
+          >
+            ⛶ <span className="hidden sm:inline">Fullscreen</span>
+          </button>
+        )}
       </header>
 
       <div
@@ -77,10 +87,10 @@ function App() {
         <VisualizerCanvas analyserRef={engine.analyserRef} renderer={activeVisualizer} />
 
         {engine.status === 'idle' && (
-          <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
+          <div className="pointer-events-none absolute inset-0 flex items-center justify-center px-6">
             <p className="text-center text-sm text-white/40">
               Drop an audio file anywhere, or use the controls below
-              <br />
+              <br className="hidden sm:block" />
               to start the microphone.
             </p>
           </div>
@@ -99,7 +109,7 @@ function App() {
         )}
       </div>
 
-      <div className="pointer-events-none absolute bottom-0 flex w-full justify-center p-4">
+      <div className="pointer-events-none absolute bottom-0 flex max-h-full w-full justify-center p-2 pb-[max(0.5rem,env(safe-area-inset-bottom))] sm:p-4">
         <ControlBar
           status={engine.status}
           isPlaying={engine.isPlaying}
