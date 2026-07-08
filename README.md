@@ -40,3 +40,7 @@ Then open the printed local URL, and either drop an audio file onto the page or 
 ## How it works
 
 Audio (from a file or the microphone) is routed through a single Web Audio `AnalyserNode`. On every animation frame, the app reads frequency and time-domain data from that analyser, derives bass/mid/treble levels, and hands the result to the active visualizer, which draws directly to a 2D canvas. See [`CLAUDE.md`](./CLAUDE.md) for a deeper architecture breakdown.
+
+## License
+
+GNU General Public License v3.0 — see [LICENSE](./LICENSE) for details.
